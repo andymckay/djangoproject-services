@@ -1,6 +1,9 @@
 from django.views.generic.list_detail import object_list, object_detail
+from django.shortcuts import render_to_response
 
-from models import Company
+
+from services.models import Company
+from services.forms import CompanyForm
 
 
 def company_list(request):
@@ -20,3 +23,18 @@ def company_detail(request, slug):
         "extra_context": {},
     }
     return object_detail(request, queryset, **kwargs)
+
+
+def company_create(request, template="services/company_create.html"):
+    form = CompanyForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(form.next())
+    
+    ctx = {
+        "form": form
+    }
+    
+    return render_to_response(template, ctx)
+    
+    
